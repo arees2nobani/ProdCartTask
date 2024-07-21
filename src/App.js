@@ -1,6 +1,6 @@
 import './App.css';
 // import Layout from './layout';
-import GetProductsCategoriesList from './components/GetProductsCategoriesList'
+import GetProductsCategoriesList from './components/GetProductsByCategories'
 
 
 function App() {
@@ -14,3 +14,6 @@ function App() {
 }
 
 export default App;
+
+// for small spaces:
+// 3<span class="spanen">&nbsp;</span>

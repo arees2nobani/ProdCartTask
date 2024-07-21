@@ -26,15 +26,31 @@ function ProductList() {
     <div>
       <h1>Categories List</h1>
       {error && <p>Error: {error}</p>}
-      <ul>
+      <label>Category:</label>
+      <span class="spanen">&nbsp;</span>
+
+      <select>
+  <option>1</option>
+  <option>1</option>
+  <option>1</option>
+  <option>2</option>
+  <option>1</option>
+  <option>1</option>
+
+</select>
+
+      <select label='Category' name='Category' value="Category" > 
+
         {categories.map((category, index) => (
-          <li key={index}>
-            {category.name}
-          </li>
+            <option key={index}>
+              {category.name}
+            </option>
         ))}
-      </ul>
+      </select>
     </div>
   );
 }
+
+
 
 export default ProductList;
