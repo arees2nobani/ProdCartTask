@@ -30,6 +30,9 @@ function GetProductByCategory() {
   const [categories, setCategories] = useState([]);
   const [query, setQuery] = useState('');
 
+  const [sortOrder, setSortOrder] = useState('asc'); 
+
+
 
 
   useEffect(() => {
@@ -129,7 +132,25 @@ const handleKeyPress = (e) => { // Added function to handle key press
 };
 /////////////////////////////
 
+//sort
 
+const sortProducts = (order) => {
+  const sortedProducts = [...products].sort((a, b) => {
+    if (order === 'asc') {
+      return a.price - b.price;
+    } else {
+      return b.price - a.price;
+    }
+  });
+  setProducts(sortedProducts);
+};
+
+const toggleSortOrder = () => {
+  const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+  setSortOrder(newOrder);
+  sortProducts(newOrder);
+};
+/////////////////////////////
 
   return (
     <div className='Selection'>
@@ -146,8 +167,16 @@ const handleKeyPress = (e) => { // Added function to handle key press
           <option key={index} value={category.slug}>{category.name}</option>
         ))}
       </select>
-      
-      {/* search sort (by price arc or desc)  add cart to see the added products and they can be deleted from it */}
+      <span class="spanen">&nbsp;</span>
+      <span class="spanen">&nbsp;</span>
+      <span class="spanen">&nbsp;</span>
+      <span class="spanen">&nbsp;</span>
+      <span class="spanen">&nbsp;</span>
+      <span class="spanen">&nbsp;</span>
+
+
+      <button className='selectCSS' onClick={toggleSortOrder}>Sort products</button>
+
       <input
         type="text"
         value={query}

@@ -1,13 +1,13 @@
 import './App.css';
 // import Layout from './layout';
-import GetProductsCategoriesList from './components/GetProductsByCategories'
+import Layout from './components/CategorySearchSort'
 
 
 function App() {
   return (
     <div className="App">
       <header className="App-header">
-        <GetProductsCategoriesList />
+        <Layout />
       </header>
     </div>
   );
@@ -16,4 +16,4 @@ function App() {
 export default App;
 
 // for small spaces:
-// 3<span class="spanen">&nbsp;</span>
+// <span class="spanen">&nbsp;</span>
