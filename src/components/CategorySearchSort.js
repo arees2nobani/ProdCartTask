@@ -133,7 +133,6 @@ const handleKeyPress = (e) => { // Added function to handle key press
 /////////////////////////////
 
 //sort
-
 const sortProducts = (order) => {
   const sortedProducts = [...products].sort((a, b) => {
     if (order === 'asc') {
@@ -155,8 +154,10 @@ const toggleSortOrder = () => {
   return (
     <div className='Selection'>
       <div className='divHeader'>
+        <div className='shopCart'>
       <i><h1>MyShop</h1></i>
-      
+      <button className='cartbutton' >🛒</button>
+      </div>
       <select
         value={productCategory}
         onChange={(e) => setProductCategory(e.target.value)}
@@ -167,6 +168,7 @@ const toggleSortOrder = () => {
           <option key={index} value={category.slug}>{category.name}</option>
         ))}
       </select>
+
       <span class="spanen">&nbsp;</span>
       <span class="spanen">&nbsp;</span>
       <span class="spanen">&nbsp;</span>
@@ -211,4 +213,3 @@ const toggleSortOrder = () => {
 }
 
 export default GetProductByCategory;
-
