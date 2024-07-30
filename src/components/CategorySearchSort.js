@@ -1,5 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
+// import Cart from './Cart';
+import { useNavigate } from 'react-router-dom';
+import SignUpLoginModal from './SignUpLoginModal'; 
+
+
 
 const TruncatedText = ({ text, maxLength }) => {
   const [isTruncated, setIsTruncated] = useState(true);
@@ -32,8 +37,14 @@ function GetProductByCategory() {
 
   const [sortOrder, setSortOrder] = useState('asc'); 
 
+  const navigate = useNavigate();
+
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState({ token: '', userId: '' });
 
 
+  /////////////////////////////
 
   useEffect(() => {
     fetch('https://dummyjson.com/products/categories')
@@ -46,6 +57,8 @@ function GetProductByCategory() {
         console.error('Error fetching categories: ', err);
       });
   }, []);
+
+  /////////////////////////////
 
   useEffect(() => {
     if (productCategory) {
@@ -71,38 +84,37 @@ function GetProductByCategory() {
     }
   }, [productCategory]);
 
-  const handleAddToCart = (productId, quantity = 1) => {
-    
-    fetch('https://dummyjson.com/carts/add', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        userId: 1,
-        products: [
-          {
-            id: productId,
-            quantity: quantity,
-          }
-        ]
-      })
-    })
-    .then(res => res.json())
-    .then(data => {
-      console.log('Added to cart:', data);
+  /////////////////////////////
 
-        Swal.fire({
-          position: "center",
-          icon: "success",
-          title: "added to Cart!",
-          showConfirmButton: false,
-          timer: 1300
-        });   
-      
-    })
-    .catch(err => {
-      console.error('Error adding to cart:', err);
+  const handleAddToCart = (productId, quantity = 1) => {
+    if (!isLoggedIn) {
+      Swal.fire({
+        position: 'center',
+        icon: 'warning',
+        title: 'Please login first!',
+        showConfirmButton: true,
+      });
+      return;
+    }
+
+    const existingCart = JSON.parse(localStorage.getItem('cart')) || {};
+    const newCart = {
+      ...existingCart,
+      [productId]: (existingCart[productId] || 0) + quantity,
+    };
+    localStorage.setItem('cart', JSON.stringify(newCart));
+
+    Swal.fire({
+      position: "center",
+      icon: "success",
+      title: "added to Cart!",
+      showConfirmButton: false,
+      timer: 1300
     });
   };
+
+  /////////////////////////////
+
   //search
 
   const searchProducts = () => {
@@ -125,38 +137,85 @@ function GetProductByCategory() {
       });
   };
 
-const handleKeyPress = (e) => { // Added function to handle key press
-  if (e.key === 'Enter') {
-    searchProducts();
-  }
-};
-/////////////////////////////
-
-//sort
-const sortProducts = (order) => {
-  const sortedProducts = [...products].sort((a, b) => {
-    if (order === 'asc') {
-      return a.price - b.price;
-    } else {
-      return b.price - a.price;
+  const handleKeyPress = (e) => { 
+    if (e.key === 'Enter') {
+      searchProducts();
     }
-  });
-  setProducts(sortedProducts);
-};
+  };
 
-const toggleSortOrder = () => {
-  const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
-  setSortOrder(newOrder);
-  sortProducts(newOrder);
-};
-/////////////////////////////
+  /////////////////////////////
+
+  const handleLogin = (username, password) => {
+    fetch('https://dummyjson.com/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ username, password, expiresInMins: 60 }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      console.log('Login successful:', data);
+      setUser({ token: data.token, userId: data.id });
+      setIsLoggedIn(true);
+      Swal.fire({
+        position: 'center',
+        icon: 'success',
+        title: 'Login successful!',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+      setIsModalOpen(false); 
+    })
+    .catch(err => {
+      console.error('Login error:', err);
+      Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Login failed!',
+        showConfirmButton: false,
+        timer: 1500,
+      });
+    });
+  };
+
+  /////////////////////////////
+
+  //sort
+  const sortProducts = (order) => {
+    const sortedProducts = [...products].sort((a, b) => {
+      if (order === 'asc') {
+        return a.price - b.price;
+      } else {
+        return b.price - a.price;
+      }
+    });
+    setProducts(sortedProducts);
+  };
+
+  /////////////////////////////
+
+  const toggleSortOrder = () => {
+    const newOrder = sortOrder === 'asc' ? 'desc' : 'asc';
+    setSortOrder(newOrder);
+    sortProducts(newOrder);
+  };
+
+  /////////////////////////////
+
+  const showCart = () => {
+    navigate('/Cart');
+  }
+
+ /////////////////////////////
 
   return (
     <div className='Selection'>
       <div className='divHeader'>
         <div className='shopCart'>
       <i><h1>MyShop</h1></i>
-      <button className='cartbutton' >🛒</button>
+      <div className='loginCart'>
+        <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Sign Up / Login</button>
+        <button className='cartbutton' onClick={showCart}>🛒</button>
+      </div>
       </div>
       <select
         value={productCategory}
@@ -177,7 +236,7 @@ const toggleSortOrder = () => {
       <span class="spanen">&nbsp;</span>
 
 
-      <button className='selectCSS' onClick={toggleSortOrder}>Sort products</button>
+      <button className='selectCSS' onClick={toggleSortOrder}>Sort products $</button>
 
       <input
         type="text"
@@ -208,8 +267,46 @@ const toggleSortOrder = () => {
           ))}
         </div>
       )}
+      <SignUpLoginModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onLogin={handleLogin}
+       />
     </div>
   );
 }
 
 export default GetProductByCategory;
+
+
+  // const handleAddToCart = (productId, quantity = 1) => {
+    
+  //   fetch('https://dummyjson.com/carts/add', {
+  //     method: 'POST',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({
+  //       userId: 1,
+  //       products: [
+  //         {
+  //           id: productId,
+  //           quantity: quantity,
+  //         }
+  //       ]
+  //     })
+  //   })
+  //   .then(res => res.json())
+  //   .then(data => {
+  //     console.log('Added to cart:', data);
+
+  //       Swal.fire({
+  //         position: "center",
+  //         icon: "success",
+  //         title: "added to Cart!",
+  //         showConfirmButton: false,
+  //         timer: 1300
+  //       });   
+  //   })
+  //   .catch(err => {
+  //     console.error('Error adding to cart:', err);
+  //   });
+  // };
