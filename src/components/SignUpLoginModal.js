@@ -44,19 +44,45 @@ const SignUpLoginModal = ({ isOpen, onClose, onLogin }) => {
     }
   };
 
-  useEffect(() => {
-    if (isOpen) {
-      Swal.fire({
-        title: isLogin ? 'Login' : 'Sign Up',
+  const showSwalModal = () => {
+    Swal.fire({
+      title: isLogin ? 'Login' : 'Sign Up',
+      html: `
+        <input id="swal-input1" class="swal2-input" placeholder="Username">
+        <input id="swal-input2" class="swal2-input" type="password" placeholder="Password">
+        <p style="cursor: pointer; color: blue;" id="swal-switch">
+          ${isLogin ? 'Create an account' : 'Already have an account? Log in'}
+        </p>
+      `,
+      showCancelButton: true,
+      confirmButtonText: isLogin ? 'Login' : 'Sign Up',
+      preConfirm: () => {
+        const username = document.getElementById('swal-input1').value;
+        const password = document.getElementById('swal-input2').value;
+        setUsername(username);
+        setPassword(password);
+        return { username, password };
+      },
+      willClose: onClose,
+    }).then(result => {
+      if (result.isConfirmed) {
+        handleSubmit();
+      }
+    });
+
+    document.getElementById('swal-switch').addEventListener('click', () => {
+      setIsLogin(!isLogin);
+      Swal.update({
+        title: !isLogin ? 'Login' : 'Sign Up',
         html: `
           <input id="swal-input1" class="swal2-input" placeholder="Username">
           <input id="swal-input2" class="swal2-input" type="password" placeholder="Password">
           <p style="cursor: pointer; color: blue;" id="swal-switch">
-            ${isLogin ? 'Create an account' : 'Already have an account? Log in'}
+            ${!isLogin ? 'Create an account' : 'Already have an account? Log in'}
           </p>
         `,
         showCancelButton: true,
-        confirmButtonText: isLogin ? 'Login' : 'Sign Up',
+        confirmButtonText: !isLogin ? 'Login' : 'Sign Up',
         preConfirm: () => {
           const username = document.getElementById('swal-input1').value;
           const password = document.getElementById('swal-input2').value;
@@ -64,22 +90,23 @@ const SignUpLoginModal = ({ isOpen, onClose, onLogin }) => {
           setPassword(password);
           return { username, password };
         },
-        willClose: onClose,
-      })
-      .then(result => {
-        if (result.isConfirmed) {
-          handleSubmit();
-        }
       });
 
       document.getElementById('swal-switch').addEventListener('click', () => {
-        setIsLogin(!isLogin); 
-        onClose();
+        setIsLogin(!isLogin);
+        showSwalModal(); // Recursively call to switch again
       });
+    });
+  };
+
+  useEffect(() => {
+    if (isOpen) {
+      showSwalModal();
     }
-  }, [isOpen, isLogin, onClose]);
+  }, [isOpen]);
 
   return null;
 };
 
 export default SignUpLoginModal;
+

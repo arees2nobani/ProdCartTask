@@ -41,7 +41,9 @@ function GetProductByCategory() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({ token: '', userId: '' });
+  const [ setUser] = useState({ token: '', userId: '' });
+  // const [user, setUser] = useState({ token: '', userId: '' });
+
 
 
   /////////////////////////////
@@ -251,6 +253,9 @@ function GetProductByCategory() {
 
       <br />      
       <br />
+      
+      {/* print all products of anything but don't keep the page empty at first */}
+      {/* or show all products as slides or anything to not make it empty  */}
 
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
