@@ -1,0 +1,108 @@
+.profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    text-align: center; 
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column; 
+  align-items: center; 
+  margin-bottom: 20px;
+}
+  
+  .profile-image {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 20px;
+  }
+  
+  .profile-info {
+    flex: 1;
+  }
+  
+  .profile-info h1 {
+    margin: 0;
+    font-size: 24px;
+  }
+  
+  .profile-title {
+    color: #666;
+    font-size: 16px;
+  }
+  
+  .profile-rating {
+    margin: 10px 0;
+    font-size: 18px;
+    color: #f39c12;
+  }
+  
+  .profile-button {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  
+  .profile-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .profile-details {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .profile-contact,
+  .profile-additional {
+    flex: 1;
+    margin-right: 20px;
+  }
+  
+  .profile-contact h2,
+  .profile-additional h2 {
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 5px;
+    margin-bottom: 10px;
+  }
+  
+  .profile-contact p,
+  .profile-additional p {
+    margin: 5px 0;
+  }
+  
+  .buyBTN {
+    padding-left: 5%;
+    padding-right: 5%;
+    padding-top: 1%;
+    padding-bottom: 1%;
+
+    background-color: Transparent;
+    background-repeat:no-repeat;
+    border-width:2px;
+    border-style:solid;
+    border-color:#dadbdd;
+    cursor:pointer;
+    overflow: hidden;
+    color:#0530bb;
+    border-radius: 12px;
+    font-size: 16px;
+  }
+
+  .buyBTN:hover {
+    background-color: #066cb6;
+    color: white;
+  }
+
+  .buyDiv {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }

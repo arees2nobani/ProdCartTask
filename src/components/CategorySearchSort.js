@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Swal from 'sweetalert2';
-// import Cart from './Cart';
 import { useNavigate } from 'react-router-dom';
 import SignUpLoginModal from './SignUpLoginModal'; 
 
@@ -41,7 +40,10 @@ function GetProductByCategory() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [ setUser] = useState({ token: '', userId: '' });
+  // const [ setUser] = useState({ token: '', userId: '' });
+
+  const [user, setUser] = useState({ token: '', userId: '', username: '' });
+
   // const [user, setUser] = useState({ token: '', userId: '' });
 
 
@@ -100,12 +102,19 @@ function GetProductByCategory() {
     }
 
     const existingCart = JSON.parse(localStorage.getItem('cart')) || {};
-    const newCart = {
-      ...existingCart,
-      [productId]: (existingCart[productId] || 0) + quantity,
-    };
-    localStorage.setItem('cart', JSON.stringify(newCart));
+    const userCart = existingCart[user.userId] || {};
+    // const newCart = {
+    //   ...existingCart,
+    //   [productId]: (existingCart[productId] || 0) + quantity,
+    // };
+    // localStorage.setItem('cart', JSON.stringify(newCart));
 
+    const updatedUserCart = {
+      ...userCart,
+      [productId]: (userCart[productId] || 0) + quantity,
+    };
+
+    localStorage.setItem('cart', JSON.stringify({ ...existingCart, [user.userId]: updatedUserCart }));
     Swal.fire({
       position: "center",
       icon: "success",
@@ -147,6 +156,7 @@ function GetProductByCategory() {
 
   /////////////////////////////
 
+
   const handleLogin = (username, password) => {
     fetch('https://dummyjson.com/auth/login', {
       method: 'POST',
@@ -155,17 +165,28 @@ function GetProductByCategory() {
     })
     .then(res => res.json())
     .then(data => {
-      console.log('Login successful:', data);
-      setUser({ token: data.token, userId: data.id });
-      setIsLoggedIn(true);
-      Swal.fire({
-        position: 'center',
-        icon: 'success',
-        title: 'Login successful!',
-        showConfirmButton: false,
-        timer: 1500,
-      });
-      setIsModalOpen(false); 
+      if (data.token) {
+        console.log('Login successful:', data);
+        setUser({ token: data.token, userId: data.id, username: data.username });
+        setIsLoggedIn(true);
+        Swal.fire({
+          position: 'center',
+          icon: 'success',
+          title: 'Login successful!',
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        setIsModalOpen(false);
+      } else {
+        console.error('Login failed:', data);
+        Swal.fire({
+          position: 'center',
+          icon: 'error',
+          title: 'Login failed!',
+          text: data.message || 'Invalid username or password.',
+          showConfirmButton: true,
+        });
+      }
     })
     .catch(err => {
       console.error('Login error:', err);
@@ -173,11 +194,12 @@ function GetProductByCategory() {
         position: 'center',
         icon: 'error',
         title: 'Login failed!',
-        showConfirmButton: false,
-        timer: 1500,
+        text: 'An unexpected error occurred.',
+        showConfirmButton: true,
       });
     });
   };
+
 
   /////////////////////////////
 
@@ -207,6 +229,11 @@ function GetProductByCategory() {
     navigate('/Cart');
   }
 
+  const goToProfile = () => {
+    navigate('/profile', { state: { userId: user.userId } });
+  };
+  
+
  /////////////////////////////
 
   return (
@@ -215,7 +242,15 @@ function GetProductByCategory() {
         <div className='shopCart'>
       <i><h1>MyShop</h1></i>
       <div className='loginCart'>
-        <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Sign Up / Login</button>
+      {isLoggedIn ? (
+              <button className='loginSignup' onClick={goToProfile}>
+                {user.username}
+              </button>
+            ) : (
+              <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Login</button>
+            )}
+
+        {/* <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Sign Up / Login</button> */}
         <button className='cartbutton' onClick={showCart}>🛒</button>
       </div>
       </div>
@@ -253,7 +288,7 @@ function GetProductByCategory() {
 
       <br />      
       <br />
-      
+
       {/* print all products of anything but don't keep the page empty at first */}
       {/* or show all products as slides or anything to not make it empty  */}
 
@@ -276,42 +311,10 @@ function GetProductByCategory() {
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onLogin={handleLogin}
-       />
+      />
+
     </div>
   );
 }
 
 export default GetProductByCategory;
-
-
-  // const handleAddToCart = (productId, quantity = 1) => {
-    
-  //   fetch('https://dummyjson.com/carts/add', {
-  //     method: 'POST',
-  //     headers: { 'Content-Type': 'application/json' },
-  //     body: JSON.stringify({
-  //       userId: 1,
-  //       products: [
-  //         {
-  //           id: productId,
-  //           quantity: quantity,
-  //         }
-  //       ]
-  //     })
-  //   })
-  //   .then(res => res.json())
-  //   .then(data => {
-  //     console.log('Added to cart:', data);
-
-  //       Swal.fire({
-  //         position: "center",
-  //         icon: "success",
-  //         title: "added to Cart!",
-  //         showConfirmButton: false,
-  //         timer: 1300
-  //       });   
-  //   })
-  //   .catch(err => {
-  //     console.error('Error adding to cart:', err);
-  //   });
-  // };
