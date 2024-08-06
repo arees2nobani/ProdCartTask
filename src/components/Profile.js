@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Profile.css';
+import { useNavigate } from 'react-router-dom';
 
 const Profile = () => {
   const [user, setUser] = useState(null);
   const location = useLocation();
   const { userId } = location.state || {};
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (userId) {
@@ -24,6 +26,10 @@ const Profile = () => {
   if (!user) {
     return <div>Loading...</div>;
   }
+
+  const backToHome = () => {
+    navigate(-1); // Navigate back but not working right
+  };
 
   return (
     <div className="profile-container">
@@ -53,6 +59,7 @@ const Profile = () => {
           <p><strong>Gender:</strong> {user.gender}</p>
         </div>
       </div>
+      <button className='backBTN' onClick={backToHome}>Go Back</button>
     </div>
   );
 };
