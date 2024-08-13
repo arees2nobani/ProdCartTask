@@ -265,12 +265,12 @@ function GetProductByCategory() {
         ))}
       </select>
 
-      <span class="spanen">&nbsp;</span>
-      <span class="spanen">&nbsp;</span>
-      <span class="spanen">&nbsp;</span>
-      <span class="spanen">&nbsp;</span>
-      <span class="spanen">&nbsp;</span>
-      <span class="spanen">&nbsp;</span>
+      <span className="spanen">&nbsp;</span>
+      <span className="spanen">&nbsp;</span>
+      <span className="spanen">&nbsp;</span>
+      <span className="spanen">&nbsp;</span>
+      <span className="spanen">&nbsp;</span>
+      <span className="spanen">&nbsp;</span>
 
 
       <button className='selectCSS' onClick={toggleSortOrder}>Sort products $</button>

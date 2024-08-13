@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import './Profile.css';
 import { useNavigate } from 'react-router-dom';
+import Swal from 'sweetalert2';
+
 
 const Profile = () => {
   const [user, setUser] = useState(null);
@@ -28,7 +30,15 @@ const Profile = () => {
   }
 
   const backToHome = () => {
-    navigate(-1); // Navigate back but not working right
+     
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Log out successful!',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+    navigate('/');
   };
 
   return (
@@ -59,7 +69,7 @@ const Profile = () => {
           <p><strong>Gender:</strong> {user.gender}</p>
         </div>
       </div>
-      <button className='backBTN' onClick={backToHome}>Go Back</button>
+      <button className='backBTN' onClick={backToHome}>Log out</button>
     </div>
   );
 };

@@ -1,8 +1,7 @@
-login and take token (auth) to be able to add to cart for new user 
-after login put users name instead of signup/login
-fix adding to cart
-add something to first page 
-do a login for user and admin (auth)
-user should be done but for admin it can see all charts and can add delete or update products 
-
-
+1. fix adding to cart see all added products 
+2. fix logging in and logging out 
+3. add something to first page like:
+    - print all products of anything but don't keep the page empty at first
+    - or show all products as slides or anything to not make it empty 
+4. do a login for user and admin not just user
+5. for admin it can see all charts and can add delete or update products 

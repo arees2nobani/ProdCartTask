@@ -4,10 +4,17 @@ import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import SignUpLoginModal from './SignUpLoginModal';
 
+
+
 function Cart() {
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
+  // const user = useSelector((state) => state.auth.user);
+  // const dispatch = useDispatch();
+
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [user, setUser] = useState({ token: '', userId: '', username: '' });
 
@@ -75,13 +82,13 @@ function Cart() {
       showConfirmButton: false,
       timer: 1300
     }).then(() => {
-      setCart([]); // Clear the cart
-      localStorage.removeItem('cart'); // Clear cart local storage
+      setCart([]); 
+      localStorage.removeItem('cart'); // need to fix it shouldn't remove everything 
     });
   };
 
   const backToHome = () => {
-    navigate(-1); // Navigate back but not working right
+    navigate('/'); // Navigate back but not working right
   };
 
   const goToProfile = () => {
