@@ -4,38 +4,29 @@ import { useNavigate } from 'react-router-dom';
 import './Profile.css';
 import SignUpLoginModal from './SignUpLoginModal';
 
-
-
 function Cart() {
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
-
-  // const isAuthenticated = useSelector((state) => state.auth.isAuthenticated);
-  // const user = useSelector((state) => state.auth.user);
-  // const dispatch = useDispatch();
-
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({ token: '', userId: '', username: '' });
+  const [user, setUser] = useState({ token: '', userId: '', username: '' }); 
 
   useEffect(() => {
-    // get cart from local storage
-    const storedCart = JSON.parse(localStorage.getItem('cart')) || {};
+    if (isLoggedIn) {
+      fetchCartItems(user.userId); 
+    }
+  }, [isLoggedIn, user.userId]);
 
-    // Fetch product details for each product in the cart
-    const fetchCartProducts = async () => {
-      const productIds = Object.keys(storedCart); // Get product IDs from stored cart
-      const fetchedProducts = await Promise.all(productIds.map(async (id) => {
-        const response = await fetch(`https://dummyjson.com/products/${id}`);
-        const product = await response.json();
-        // Return product details and quantity from stored cart
-        return { ...product, quantity: storedCart[id] };
-      }));
-      setCart(fetchedProducts); // Update state with fetched products
-    };
 
-    fetchCartProducts();
-  }, []);
+  const fetchCartItems = async (userId) => {
+    try {
+      const response = await fetch(`https://dummyjson.com/carts/${userId}`); 
+      const data = await response.json();
+      setCart(data.products); 
+    } catch (err) {
+      console.error('Error fetching cart:', err);
+    }
+  };
 
   const handleRemoveFromCart = (productId) => {
     Swal.fire({
@@ -48,11 +39,8 @@ function Cart() {
       confirmButtonText: 'Yes, remove it!'
     }).then((result) => {
       if (result.isConfirmed) {
-        const updatedCart = cart.filter(item => item.id !== productId); // Filter out the removed product
-        setCart(updatedCart); // Update state
-        const updatedLocalStorageCart = JSON.parse(localStorage.getItem('cart'));
-        delete updatedLocalStorageCart[productId]; // Remove product from local storage
-        localStorage.setItem('cart', JSON.stringify(updatedLocalStorageCart));
+        const updatedCart = cart.filter(item => item.id !== productId);
+        setCart(updatedCart);
         Swal.fire('Removed!', 'The item has been removed from your cart.', 'success');
       }
     });
@@ -63,14 +51,9 @@ function Cart() {
       item.id === productId ? { ...item, quantity: parseInt(quantity, 10) } : item
     );
     setCart(updatedCart);
-
-    const updatedLocalStorageCart = JSON.parse(localStorage.getItem('cart'));
-    updatedLocalStorageCart[productId] = parseInt(quantity, 10);
-    localStorage.setItem('cart', JSON.stringify(updatedLocalStorageCart));
   };
 
   const calculateTotal = () => {
-    // Calculate the total cost of items in the cart
     return cart.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
@@ -83,12 +66,11 @@ function Cart() {
       timer: 1300
     }).then(() => {
       setCart([]); 
-      localStorage.removeItem('cart'); // need to fix it shouldn't remove everything 
     });
   };
 
   const backToHome = () => {
-    navigate('/'); // Navigate back but not working right
+    navigate('/'); 
   };
 
   const goToProfile = () => {
@@ -104,9 +86,8 @@ function Cart() {
     .then(res => res.json())
     .then(data => {
       if (data.token) {
-        console.log('Login successful:', data);
-        setUser({ token: data.token, userId: data.id, username: data.username });
-        setIsLoggedIn(true);
+        setUser({ token: data.token, userId: data.id, username: data.username }); 
+        setIsLoggedIn(true); 
         Swal.fire({
           position: 'center',
           icon: 'success',
@@ -116,7 +97,6 @@ function Cart() {
         });
         setIsModalOpen(false);
       } else {
-        console.error('Login failed:', data);
         Swal.fire({
           position: 'center',
           icon: 'error',
@@ -127,7 +107,6 @@ function Cart() {
       }
     })
     .catch(err => {
-      console.error('Login error:', err);
       Swal.fire({
         position: 'center',
         icon: 'error',
@@ -143,41 +122,65 @@ function Cart() {
       <div className='divHeader'>
         <div className='shopCart'>
           <i><h1>Cart</h1></i>
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          <pre />
-          {/* <div className='loginCart'> */}
-
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
+                <pre />
           {isLoggedIn ? (
-              <button className='loginSignup' onClick={goToProfile}>
-                {user.username}
-              </button>
-            ) : (
-              <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Login</button>
-            )}
+            <button className='loginSignup' onClick={goToProfile}>
+              {user.username}
+            </button>
+          ) : (
+            <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Login</button>
+          )}
           <button className='backBTN' onClick={backToHome}>Go Back</button>
-          {/* </div> */}
         </div>
       </div>
       <br />
-      <br />
 
       {cart.length === 0 ? (
-        <p>Your cart is empty.</p>
+        isLoggedIn ?(
+          <h4><i>
+              <span className="spanen">&nbsp;</span> 
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span> 
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              Your cart is empty.
+              </i></h4>
+            ):
+
+          
+            <h4><i>
+              <span className="spanen">&nbsp;</span> 
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span> 
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              <span className="spanen">&nbsp;</span>
+              login to see your cart.
+              </i></h4>
+          
+
       ) : (
         <>
           <div className="showProduct" style={{ display: 'flex', flexWrap: 'wrap' }}>
+
             {cart.map((product) => (
               <div key={product.id} style={{ flex: '1 0 30%', margin: '1%' }}>
                 <h3>{product.title}</h3>
@@ -195,17 +198,17 @@ function Cart() {
                 <button onClick={() => handleRemoveFromCart(product.id)}>Remove</button>
               </div>
             ))}
-            <h3>Total: ${calculateTotal().toFixed(2)}</h3>
+            
           </div>
           
           <br />
           
-          <div className='buyDiv'>
+          
+          <div className='totalAmount'>
+            <h3>Total: ${calculateTotal().toFixed(2)}</h3>
             <button onClick={handleBuy} className='buyBTN'>Buy</button>
           </div>
-          <br />
-          <br />
-          <br />
+          <br /><br /><br />
         </>
       )}
       <SignUpLoginModal
