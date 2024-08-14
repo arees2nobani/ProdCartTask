@@ -9,14 +9,17 @@ function Cart() {
   const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState({ token: '', userId: '', username: '' }); 
+  const [user, setUser] = useState({ token: '', userId: '', username: '' });
 
   useEffect(() => {
-    if (isLoggedIn) {
-      fetchCartItems(user.userId); 
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setUser(userData);
+      setIsLoggedIn(true);
+      fetchCartItems(userData.userId);
     }
-  }, [isLoggedIn, user.userId]);
-
+  }, []);
 
   const fetchCartItems = async (userId) => {
     try {
@@ -58,15 +61,25 @@ function Cart() {
   };
 
   const handleBuy = () => {
-    Swal.fire({
-      position: "center",
-      icon: "success",
-      title: "Bought successfully",
-      showConfirmButton: false,
-      timer: 1300
-    }).then(() => {
-      setCart([]); 
-    });
+    if (calculateTotal() === 0) {
+      Swal.fire({
+        position: 'center',
+        icon: 'error',
+        title: 'Buy failed!',
+        text: 'Your cart is empty',
+        showConfirmButton: true,
+      });
+    } else {
+      Swal.fire({
+        position: "center",
+        icon: "success",
+        title: "Bought successfully",
+        showConfirmButton: false,
+        timer: 1300
+      }).then(() => {
+        setCart([]); 
+      });
+    }
   };
 
   const backToHome = () => {
@@ -88,6 +101,11 @@ function Cart() {
       if (data.token) {
         setUser({ token: data.token, userId: data.id, username: data.username }); 
         setIsLoggedIn(true); 
+        localStorage.setItem('user', JSON.stringify({
+          token: data.token,
+          userId: data.id,
+          username: data.username,
+        }));
         Swal.fire({
           position: 'center',
           icon: 'success',
@@ -117,70 +135,51 @@ function Cart() {
     });
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setUser({ token: '', userId: '', username: '' });
+    setIsLoggedIn(false);
+    navigate('/');
+    Swal.fire({
+      position: 'center',
+      icon: 'success',
+      title: 'Logged out successfully!',
+      showConfirmButton: false,
+      timer: 1500,
+    });
+  };
+  
   return (
     <div>
       <div className='divHeader'>
         <div className='shopCart'>
           <i><h1>Cart</h1></i>
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
-                <pre />
+          <pre /> <pre /> <pre /> <pre /> <pre /> <pre /> <pre /> <pre />
+          
           {isLoggedIn ? (
-            <button className='loginSignup' onClick={goToProfile}>
-              {user.username}
-            </button>
-          ) : (
-            <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Login</button>
+              <>
+                <button className='loginSignup' onClick={goToProfile}>
+                  {user.username}
+                </button>
+                <button className='loginSignup' onClick={handleLogout}>Logout</button>
+              </>
+            ) : (
+              <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Login</button>
           )}
+
           <button className='backBTN' onClick={backToHome}>Go Back</button>
         </div>
       </div>
       <br />
-
       {cart.length === 0 ? (
-        isLoggedIn ?(
-          <h4><i>
-              <span className="spanen">&nbsp;</span> 
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span> 
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              Your cart is empty.
-              </i></h4>
-            ):
-
-          
-            <h4><i>
-              <span className="spanen">&nbsp;</span> 
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span> 
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              <span className="spanen">&nbsp;</span>
-              login to see your cart.
-              </i></h4>
-          
-
+        isLoggedIn ? (
+          <h4><i>Your cart is empty.</i></h4>
+        ) : (
+          <h4><i>Login to see your cart.</i></h4>
+        )
       ) : (
         <>
           <div className="showProduct" style={{ display: 'flex', flexWrap: 'wrap' }}>
-
             {cart.map((product) => (
               <div key={product.id} style={{ flex: '1 0 30%', margin: '1%' }}>
                 <h3>{product.title}</h3>
@@ -193,22 +192,19 @@ function Cart() {
                     value={product.quantity} 
                     onChange={(e) => updateQuantity(product.id, e.target.value)} 
                     min="1"
+                    max="20"
                   />
                 </p>
                 <button onClick={() => handleRemoveFromCart(product.id)}>Remove</button>
               </div>
             ))}
-            
           </div>
-          
           <br />
-          
-          
           <div className='totalAmount'>
             <h3>Total: ${calculateTotal().toFixed(2)}</h3>
             <button onClick={handleBuy} className='buyBTN'>Buy</button>
           </div>
-          <br /><br /><br />
+          <br /> <br /> <br />
         </>
       )}
       <SignUpLoginModal

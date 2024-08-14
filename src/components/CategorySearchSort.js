@@ -26,6 +26,8 @@ const TruncatedText = ({ text, maxLength }) => {
   );
 };
 
+
+
 function GetProductByCategory() {
   const [productCategory, setProductCategory] = useState('');
   const [products, setProducts] = useState([]);
@@ -40,11 +42,17 @@ function GetProductByCategory() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  // const [ setUser] = useState({ token: '', userId: '' });
 
   const [user, setUser] = useState({ token: '', userId: '', username: '' });
 
-  // const [user, setUser] = useState({ token: '', userId: '' });
+  useEffect(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const userData = JSON.parse(savedUser);
+      setUser(userData);
+      setIsLoggedIn(true);
+    }
+  }, []);
 
 
 
@@ -102,6 +110,7 @@ function GetProductByCategory() {
     }
 
     const existingCart = JSON.parse(localStorage.getItem('cart')) || {};
+    console.log(existingCart);
     const userCart = existingCart[user.userId] || {};
     // const newCart = {
     //   ...existingCart,
@@ -167,6 +176,8 @@ function GetProductByCategory() {
     .then(data => {
       if (data.token) {
         console.log('Login successful:', data);
+        // Save token and user info to local storage
+        localStorage.setItem('user', JSON.stringify({  token: data.token, refreshToken:data.refreshToken, userId: data.id,  username: data.username }));
         setUser({ token: data.token, userId: data.id, username: data.username });
         setIsLoggedIn(true);
         Swal.fire({
@@ -200,6 +211,20 @@ function GetProductByCategory() {
     });
   };
 
+  /////////////////////////////
+  
+  // const handleLogout = () => {
+  //   localStorage.removeItem('user');
+  //   setUser({ token: '', userId: '', username: '' });
+  //   setIsLoggedIn(false);
+  //   Swal.fire({
+  //     position: 'center',
+  //     icon: 'success',
+  //     title: 'Logout successful!',
+  //     showConfirmButton: false,
+  //     timer: 1500,
+  //   });
+  // };
 
   /////////////////////////////
 
@@ -236,6 +261,21 @@ function GetProductByCategory() {
 
  /////////////////////////////
 
+ const handleLogout = () => {
+  localStorage.removeItem('user');
+  setUser({ token: '', userId: '', username: '' });
+  setIsLoggedIn(false);
+  navigate('/');
+  Swal.fire({
+    position: 'center',
+    icon: 'success',
+    title: 'Logged out successfully!',
+    showConfirmButton: false,
+    timer: 1500,
+  });
+};
+ /////////////////////////////
+
   return (
     <div className='Selection'>
       <div className='divHeader'>
@@ -243,12 +283,15 @@ function GetProductByCategory() {
       <i><h1>MyShop</h1></i>
       <div className='loginCart'>
       {isLoggedIn ? (
-              <button className='loginSignup' onClick={goToProfile}>
-                {user.username}
-              </button>
+              <>
+                <button className='loginSignup' onClick={goToProfile}>
+                  {user.username}
+                </button>
+                <button className='loginSignup' onClick={handleLogout}>Logout</button>
+              </>
             ) : (
               <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Login</button>
-            )}
+          )}
 
         {/* <button className='loginSignup' onClick={() => setIsModalOpen(true)}>Sign Up / Login</button> */}
         <button className='cartbutton' onClick={showCart}>🛒</button>
