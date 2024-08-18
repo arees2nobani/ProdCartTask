@@ -30,18 +30,38 @@ const Profile = () => {
   }
 
   const backToHome = () => {
-     
+    localStorage.removeItem('user');
+    setUser({ token: '', userId: '', username: '' });
+    navigate('/');
     Swal.fire({
       position: 'center',
       icon: 'success',
-      title: 'Log out successful!',
+      title: 'Logged out successfully!',
       showConfirmButton: false,
       timer: 1500,
     });
-    navigate('/');
   };
+  
+  const Home = () => {
+    navigate('/');
+  }
 
   return (
+    <>
+    <div className='divHeader'>
+      <div className='shopCart'>
+        <br />  <br />  <br />
+
+        <i><h1>My Profile</h1></i>
+
+        <pre /> <pre /> <pre /> <pre /> <pre /> <pre /> <pre /> <pre />
+        <pre /> <pre /> <pre /> <pre /> <pre /> <pre /> <pre /> <pre />
+        
+        <button className='backBTN' onClick={backToHome}>Log out</button>
+        <button className='backBTN' onClick={Home}>Home</button>
+      </div>
+
+    </div>
     <div className="profile-container">
       <div className="profile-header">
         <img src={user.image} alt={user.username} className="profile-image" />
@@ -69,8 +89,9 @@ const Profile = () => {
           <p><strong>Gender:</strong> {user.gender}</p>
         </div>
       </div>
-      <button className='backBTN' onClick={backToHome}>Log out</button>
+      
     </div>
+    </>
   );
 };
 

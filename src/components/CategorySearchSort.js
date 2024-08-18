@@ -112,12 +112,6 @@ function GetProductByCategory() {
     const existingCart = JSON.parse(localStorage.getItem('cart')) || {};
     console.log(existingCart);
     const userCart = existingCart[user.userId] || {};
-    // const newCart = {
-    //   ...existingCart,
-    //   [productId]: (existingCart[productId] || 0) + quantity,
-    // };
-    // localStorage.setItem('cart', JSON.stringify(newCart));
-
     const updatedUserCart = {
       ...userCart,
       [productId]: (userCart[productId] || 0) + quantity,
@@ -213,20 +207,7 @@ function GetProductByCategory() {
 
   /////////////////////////////
   
-  // const handleLogout = () => {
-  //   localStorage.removeItem('user');
-  //   setUser({ token: '', userId: '', username: '' });
-  //   setIsLoggedIn(false);
-  //   Swal.fire({
-  //     position: 'center',
-  //     icon: 'success',
-  //     title: 'Logout successful!',
-  //     showConfirmButton: false,
-  //     timer: 1500,
-  //   });
-  // };
 
-  /////////////////////////////
 
   //sort
   const sortProducts = (order) => {
